@@ -1,26 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { TrendingUp, TrendingDown, BarChart3, Activity } from 'lucide-react';
-import { useCryptoStore, selectWatchlistAssets } from '@/stores/crypto';
+import { cryptoData } from '../data/mockData';
 import { CyberCard } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { formatCurrency, formatPercentage } from '@/shared/lib/utils';
 
 const TradingPanel: React.FC = () => {
-  const { isLoading, connectionStatus } = useCryptoStore();
-  const watchlistAssets = useCryptoStore(selectWatchlistAssets);
-  const [selectedCryptoId, setSelectedCryptoId] = useState<string | null>(null);
+  const [selectedCryptoId, setSelectedCryptoId] = useState<string>(cryptoData[0]?.id || '1');
   const [chartData, setChartData] = useState<number[]>([]);
 
   const currentSelectedCrypto = useMemo(() => {
-    if (!selectedCryptoId) return watchlistAssets[0] || null;
-    return watchlistAssets.find(asset => asset.id === selectedCryptoId) || watchlistAssets[0] || null;
-  }, [selectedCryptoId, watchlistAssets]);
-
-  useEffect(() => {
-    if (watchlistAssets.length > 0 && !selectedCryptoId && watchlistAssets[0]) {
-      setSelectedCryptoId(watchlistAssets[0].id);
-    }
+    return cryptoData.find(asset => asset.id === selectedCryptoId) || cryptoData[0];
+  }, [selectedCryptoId]);
   }, [watchlistAssets, selectedCryptoId]);
 
   useEffect(() => {
@@ -76,21 +67,13 @@ const TradingPanel: React.FC = () => {
         </div>
         <div className="flex items-center space-x-2 text-cyan-400">
           <Activity size={16} className={connectionStatus === 'connected' ? 'animate-pulse' : ''} />
-          <Badge variant="cyber" className="text-xs">
-            {connectionStatus === 'connected' ? 'LIVE' : connectionStatus.toUpperCase()}
-          </Badge>
+          <Badge variant="cyber" className="text-xs">DEMO</Badge>
         </div>
       </div>
 
-      {isLoading && (
-        <div className="flex items-center justify-center py-8">
-          <LoadingSpinner variant="cyber" size="lg" />
-        </div>
-      )}
-
       {/* Crypto List */}
       <div className="relative z-10 space-y-4">
-        {watchlistAssets.map((crypto, index) => (
+        {cryptoData.map((crypto, index) => (
           <div
             key={crypto.id}
             onClick={() => setSelectedCryptoId(crypto.id)}
@@ -138,17 +121,17 @@ const TradingPanel: React.FC = () => {
                 {/* Price Info */}
                 <div className="text-right">
                   <p className="text-white font-bold text-lg">
-                    {formatCurrency(crypto.price)}
+                    ${crypto.price.toLocaleString()}
                   </p>
                   <div className="flex items-center space-x-1">
-                    {crypto.changePercent24h > 0 ? 
+                    {crypto.change24h > 0 ? 
                       <TrendingUp size={14} className="text-green-400" /> : 
                       <TrendingDown size={14} className="text-red-400" />
                     }
                     <span className={`text-sm font-medium ${
-                      crypto.changePercent24h > 0 ? 'text-green-400' : 'text-red-400'
+                      crypto.change24h > 0 ? 'text-green-400' : 'text-red-400'
                     }`}>
-                      {formatPercentage(crypto.changePercent24h)}
+                      {crypto.change24h > 0 ? '+' : ''}{crypto.change24h.toFixed(2)}%
                     </span>
                   </div>
                 </div>
@@ -167,7 +150,7 @@ const TradingPanel: React.FC = () => {
           <h3 className="text-white font-semibold">{currentSelectedCrypto.name} Live Chart</h3>
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-cyan-400 text-xs font-mono">STREAMING</span>
+            <span className="text-cyan-400 text-xs font-mono">DEMO</span>
           </div>
         </div>
         

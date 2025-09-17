@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { useCryptoData } from '@/hooks/use-crypto-data';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,27 +16,19 @@ const queryClient = new QueryClient({
 function AppContent() {
   const [activeSection, setActiveSection] = useState('profile');
   const [mounted, setMounted] = useState(false);
-  
-  // Initialize crypto data
-  const { isLoading: cryptoDataLoading, error: cryptoDataError } = useCryptoData();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted || cryptoDataLoading) {
+  if (!mounted) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <LoadingSpinner variant="cyber" size="lg" />
           <span className="text-cyan-400 font-mono">
-            {cryptoDataError ? 'Loading Demo Data...' : 'Initializing Neural Network...'}
+            Initializing Neural Network...
           </span>
-          {cryptoDataError && (
-            <p className="text-yellow-400 text-sm text-center max-w-md">
-              {cryptoDataError}
-            </p>
-          )}
         </div>
       </div>
     );

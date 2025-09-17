@@ -1,43 +1,27 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, Wallet, Image } from 'lucide-react';
-import { usePortfolioStore } from '@/stores/portfolio';
-import { useCryptoStore } from '@/stores/crypto';
-import { formatCurrency, formatPercentage } from '@/shared/lib/utils';
+import { dashboardStats } from '../data/mockData';
 
 const StatsCards: React.FC = () => {
-  const { stats } = usePortfolioStore();
-  const { assets } = useCryptoStore();
-  
-  const dashboardStats = stats || {
-    totalValue: 125847.50,
-    dayChange: 5.24,
-    dayChangePercent: 5.24,
-    totalProfit: 12584.75,
-    totalProfitPercent: 11.2,
-    activePositions: 12,
-    totalNFTs: 47,
-    activeBots: 3,
-  };
-  
   const cardData = [
     {
       title: 'Total Portfolio Value',
-      value: formatCurrency(dashboardStats.totalValue),
-      change: dashboardStats.dayChangePercent,
+      value: `$${dashboardStats.totalValue.toLocaleString()}`,
+      change: dashboardStats.dayChange,
       icon: Wallet,
       gradient: 'from-cyan-400 to-blue-500'
     },
     {
       title: '24h Change',
-      value: formatPercentage(dashboardStats.dayChangePercent),
-      change: dashboardStats.dayChangePercent,
-      icon: dashboardStats.dayChangePercent > 0 ? TrendingUp : TrendingDown,
-      gradient: dashboardStats.dayChangePercent > 0 ? 'from-green-400 to-emerald-500' : 'from-red-400 to-red-500'
+      value: `+${dashboardStats.dayChange.toFixed(2)}%`,
+      change: dashboardStats.dayChange,
+      icon: dashboardStats.dayChange > 0 ? TrendingUp : TrendingDown,
+      gradient: dashboardStats.dayChange > 0 ? 'from-green-400 to-emerald-500' : 'from-red-400 to-red-500'
     },
     {
       title: 'Active Positions',
       value: dashboardStats.activePositions.toString(),
-      change: dashboardStats.totalProfitPercent,
+      change: 11.2,
       icon: TrendingUp,
       gradient: 'from-purple-400 to-pink-500'
     },
