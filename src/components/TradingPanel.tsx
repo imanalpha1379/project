@@ -12,7 +12,6 @@ const TradingPanel: React.FC = () => {
   const currentSelectedCrypto = useMemo(() => {
     return cryptoData.find(asset => asset.id === selectedCryptoId) || cryptoData[0];
   }, [selectedCryptoId]);
-  }, [watchlistAssets, selectedCryptoId]);
 
   useEffect(() => {
     if (!currentSelectedCrypto) return;
@@ -66,7 +65,7 @@ const TradingPanel: React.FC = () => {
           <h2 className="text-xl font-bold text-white">Trading Hub</h2>
         </div>
         <div className="flex items-center space-x-2 text-cyan-400">
-          <Activity size={16} className={connectionStatus === 'connected' ? 'animate-pulse' : ''} />
+          <Activity size={16} className={'animate-pulse'} />
           <Badge variant="cyber" className="text-xs">DEMO</Badge>
         </div>
       </div>
