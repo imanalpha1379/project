@@ -116,7 +116,13 @@ export const selectAssetBySymbol = (symbol: string) => (state: CryptoState) =>
   state.assets[symbol];
 
 export const selectWatchlistAssets = (state: CryptoState) =>
-  state.watchlist.map(symbol => state.assets[symbol]).filter(Boolean);
+  state.watchlist
+    .map(symbol => state.assets[symbol])
+    .filter(Boolean)
+    .map(asset => ({
+      ...asset,
+      sparkline: asset.sparkline || Array.from({ length: 20 }, () => asset.price + (Math.random() - 0.5) * asset.price * 0.02)
+    }));
 
 export const selectTopGainers = (limit: number = 5) => (state: CryptoState) =>
   Object.values(state.assets)
