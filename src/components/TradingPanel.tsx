@@ -1,16 +1,21 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { TrendingUp, TrendingDown, BarChart3, Activity } from 'lucide-react';
-import { useCryptoStore, selectWatchlistAssets } from '@/stores/crypto';
+import { useCryptoStore } from '@/stores/crypto';
 import { CyberCard } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { formatCurrency, formatPercentage } from '@/shared/lib/utils';
 
 const TradingPanel: React.FC = () => {
-  const { assets, selectedAsset, setSelectedAsset, isLoading, connectionStatus } = useCryptoStore();
-  const watchlistAssets = useCryptoStore(selectWatchlistAssets);
+  const { assets, watchlist, isLoading, connectionStatus } = useCryptoStore();
   const [selectedCryptoId, setSelectedCryptoId] = useState<string | null>(null);
   const [chartData, setChartData] = useState<number[]>([]);
+
+  // Stable computation of watchlist assets using useMemo
+  const watchlistAssets = useMemo(() => {
+    if (!assets || !watchlist) return [];
+    return assets.filter(asset => watchlist.includes(asset.id));
+  }, [assets, watchlist]);
 
   const currentSelectedCrypto = useMemo(() => {
     if (!selectedCryptoId) return watchlistAssets[0] || null;
@@ -18,10 +23,10 @@ const TradingPanel: React.FC = () => {
   }, [selectedCryptoId, watchlistAssets]);
 
   useEffect(() => {
-    if (watchlistAssets.length > 0 && !selectedCryptoId) {
+    if (watchlistAssets.length > 0 && !selectedCryptoId && watchlistAssets[0]) {
       setSelectedCryptoId(watchlistAssets[0].id);
     }
-  }, [watchlistAssets, selectedCryptoId]);
+  }, [watchlistAssets.length, selectedCryptoId]); // Use length instead of the array itself
 
   useEffect(() => {
     if (!currentSelectedCrypto) return;
@@ -40,7 +45,7 @@ const TradingPanel: React.FC = () => {
     interval = setInterval(updateChart, 2000);
     
     return () => clearInterval(interval);
-  }, [currentSelectedCrypto]);
+  }, [currentSelectedCrypto?.id, currentSelectedCrypto?.price]); // Use specific properties instead of the whole object
 
   const MiniChart: React.FC<{ data: number[], color: string }> = ({ data, color }) => {
     const max = Math.max(...data);
